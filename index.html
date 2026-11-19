@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El Instituto que Nunca Duerme · Instituto Altiplano</title>
+<meta name="description" content="Atención automática del Instituto Altiplano por Telegram, teléfono y formulario, con un registro central en Excel. Proyecto académico con datos ficticios.">
+<style>
+  :root {
+    --paper: #F2F4F1;
+    --surface: #FFFFFF;
+    --ink: #14262B;
+    --ink-soft: #46595E;
+    --line: #CBD5D2;
+    --agave: #1F7A6B;
+    --agave-ink: #FFFFFF;
+    --band: #14262B;
+    --band-text: #F2F4F1;
+    --band-accent: #7FD1BF;
+    --ok: #1E6B3A;
+    --wait: #8A5A00;
+    --focus: #0B57D0;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0F1A1D;
+      --surface: #16252A;
+      --ink: #E8EEEC;
+      --ink-soft: #A9BBB7;
+      --line: #2C4147;
+      --agave: #5CC2AF;
+      --agave-ink: #0F1A1D;
+      --band: #1B2F35;
+      --band-text: #E8EEEC;
+      --band-accent: #7FD1BF;
+      --ok: #7ED39A;
+      --wait: #E3B55B;
+      --focus: #8AB4F8;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 1rem; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .wrap { width: min(100% - 2.5rem, 52rem); margin-inline: auto; }
+
+  header { padding: 3rem 0 2rem; }
+  h1 {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: clamp(2.1rem, 6vw, 3.4rem);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+  }
+  .lead { font-size: 1.2rem; max-width: 38rem; margin: 0 0 1.25rem; }
+  .author { margin: 0; color: var(--ink-soft); font-size: 0.97rem; }
+  .author span { display: block; }
+
+  .aviso {
+    margin: 1.5rem 0 0;
+    padding: 0.85rem 1rem;
+    border-left: 4px solid var(--wait);
+    background: var(--surface);
+    font-size: 0.97rem;
+  }
+  .aviso[hidden] { display: none; }
+
+  .band { background: var(--band); color: var(--band-text); padding: 2.5rem 0; }
+  .band h2 { font-family: var(--serif); font-size: 1.6rem; margin: 0 0 1.5rem; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem; }
+  @media (min-width: 46rem) { .steps { grid-template-columns: repeat(3, 1fr); gap: 2rem; } }
+  .steps li { display: grid; grid-template-columns: auto 1fr; gap: 0.9rem; align-items: start; }
+  .steps .n {
+    font-family: var(--serif);
+    font-size: 2.6rem;
+    line-height: 1;
+    color: var(--band-accent);
+  }
+  .steps p { margin: 0; }
+  .band .nota { margin: 1.75rem 0 0; font-size: 0.95rem; opacity: 0.9; }
+
+  main section { padding: 2.5rem 0 0.5rem; }
+  h2 { font-family: var(--serif); font-size: 1.6rem; line-height: 1.2; margin: 0 0 1.25rem; }
+
+  .canales { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .canal { padding: 1.5rem 0; border-bottom: 1px solid var(--line); }
+  .canal-fila { display: grid; gap: 1rem; }
+  @media (min-width: 46rem) { .canal-fila { grid-template-columns: 1fr auto; align-items: center; gap: 2rem; } }
+  .canal h3 { font-family: var(--serif); font-size: 1.3rem; margin: 0 0 0.35rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; }
+  .canal p { margin: 0; max-width: 34rem; color: var(--ink-soft); }
+  .estado { font-family: var(--sans); font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; }
+  .estado::before { content: ""; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: currentColor; }
+  .estado.activo { color: var(--ok); }
+  .estado.solicitud, .estado.preparacion { color: var(--wait); }
+
+  .boton {
+    display: inline-block;
+    font: inherit;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    background: var(--agave);
+    color: var(--agave-ink);
+    border: 2px solid var(--agave);
+    border-radius: 6px;
+    padding: 0.7rem 1.2rem;
+    cursor: pointer;
+    min-width: 13rem;
+  }
+  .boton:hover { filter: brightness(1.08); }
+  .boton[aria-disabled="true"] {
+    background: transparent;
+    color: var(--ink-soft);
+    border-color: var(--line);
+    border-style: dashed;
+    cursor: not-allowed;
+    filter: none;
+  }
+
+  .panel-voz { margin-top: 1.25rem; }
+  .panel-voz[hidden] { display: none; }
+  .voz-contenedor {
+    width: 100%;
+    max-width: 26rem;
+    height: 36rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+  }
+  .voz-mensaje { margin: 0 0 0.75rem; font-size: 0.95rem; color: var(--ink-soft); }
+  .voz-error { padding: 1rem; border-left: 4px solid var(--wait); background: var(--surface); }
+
+  figure { margin: 0; }
+  figure img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  figcaption { margin-top: 0.6rem; font-size: 0.93rem; color: var(--ink-soft); }
+  .texto { max-width: 38rem; margin: 0 0 1rem; }
+
+  .docs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .docs li { border-bottom: 1px solid var(--line); }
+  .docs a { display: flex; justify-content: space-between; gap: 1rem; padding: 0.8rem 0; text-decoration: none; }
+  .docs a:hover .doc-nombre { text-decoration: underline; }
+  .doc-desc { color: var(--ink-soft); font-size: 0.95rem; text-align: right; }
+  @media (max-width: 40rem) { .docs a { flex-direction: column; gap: 0.1rem; } .doc-desc { text-align: left; } }
+
+  footer { padding: 3rem 0 3.5rem; color: var(--ink-soft); font-size: 0.93rem; }
+  footer p { margin: 0 0 0.4rem; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>El Instituto que Nunca Duerme</h1>
+    <p class="lead">El Instituto Altiplano atiende a las familias por Telegram, por teléfono y con un formulario, y guarda cada contacto en un Excel en la nube.</p>
+    <p class="author">
+      <span>Kenia Guadalupe Hernández Torres, número de control 24660123</span>
+      <span>Fundamentos de Ingeniería de Software, TecNM campus Matehuala</span>
+      <span>Proyecto académico: todos los datos son ficticios.</span>
+    </p>
+    <p class="aviso" id="aviso" hidden></p>
+  </div>
+</header>
+
+<div class="band">
+  <div class="wrap">
+    <h2>Cómo comprobar que funciona</h2>
+    <ol class="steps">
+      <li><span class="n" aria-hidden="true">1</span><p>Escribe al bot de Telegram o habla con el asistente de voz.</p></li>
+      <li><span class="n" aria-hidden="true">2</span><p>Abre el Excel y entra a la pestaña <strong>Registro</strong>.</p></li>
+      <li><span class="n" aria-hidden="true">3</span><p>Recarga la hoja y busca la fila nueva, la última de la tabla.</p></li>
+    </ol>
+    <p class="nota">Cada fila guarda el canal (Mensaje, Teléfono o Correo), quién escribió, de qué trató y el estado. «Pendiente» significa que una persona debe atenderlo. Las llamadas aparecen unos 30 segundos después de colgar.</p>
+  </div>
+</div>
+
+<main>
+  <div class="wrap">
+
+    <section aria-labelledby="t-canales">
+      <h2 id="t-canales">Elige cómo contactar al Instituto</h2>
+      <ul class="canales">
+
+        <li class="canal">
+          <div class="canal-fila">
+            <div>
+              <h3>Bot de Telegram <span class="estado" id="estado-telegram"></span></h3>
+              <p>Pregunta por horarios, costos y pagos, si hay clases, inscripción o constancias. Los temas de salud, conducta o adeudos pasan a una persona.</p>
+            </div>
+            <a class="boton" id="btn-telegram" href="#" target="_blank" rel="noopener">Abrir el bot en Telegram</a>
+          </div>
+        </li>
+
+        <li class="canal">
+          <div class="canal-fila">
+            <div>
+              <h3>Llamada con asistente de voz <span class="estado" id="estado-voz"></span></h3>
+              <p>Habla desde el navegador, sin marcar un número. Acepta el permiso del micrófono cuando lo pida. El asistente se presenta como virtual y ofrece hablar con una persona.</p>
+            </div>
+            <button class="boton" id="btn-voz" type="button" aria-expanded="false" aria-controls="panel-voz">Mostrar el asistente de voz</button>
+          </div>
+          <div class="panel-voz" id="panel-voz" hidden>
+            <p class="voz-mensaje">Pulsa el botón del asistente para empezar la llamada y vuelve a pulsarlo para colgar.</p>
+            <div id="voz-zona"></div>
+          </div>
+        </li>
+
+        <li class="canal">
+          <div class="canal-fila">
+            <div>
+              <h3>Solicitud de constancia <span class="estado" id="estado-constancias"></span></h3>
+              <p>Llena el formulario con el nombre completo y la matrícula del alumno. La solicitud queda registrada y se envía un acuse con folio.</p>
+            </div>
+            <a class="boton" id="btn-constancias" href="#" target="_blank" rel="noopener">Abrir el formulario</a>
+          </div>
+        </li>
+
+        <li class="canal">
+          <div class="canal-fila">
+            <div>
+              <h3>Registro en Excel <span class="estado" id="estado-excel"></span></h3>
+              <p>Es el libro donde se guarda cada conversación, llamada y solicitud. Se abre en modo de solo lectura: puedes mirarlo sin modificar nada.</p>
+            </div>
+            <a class="boton" id="btn-excel" href="#" target="_blank" rel="noopener">Abrir el Excel</a>
+          </div>
+        </li>
+
+      </ul>
+    </section>
+
+    <section aria-labelledby="t-conecta">
+      <h2 id="t-conecta">Cómo se conecta todo</h2>
+      <p class="texto">Los mensajes de Telegram y las llamadas pasan por n8n. Los correos, los recordatorios de pago y el resumen diario al director los maneja Power Automate. Los dos escriben en la misma tabla Registro del Excel.</p>
+      <figure id="figura-diagrama">
+        <img src="Dibujo_final_Instituto.png" alt="Diagrama con tres columnas: entradas (Telegram, asistente de voz y correo), motor de automatización (n8n y Power Automate) y salidas (respuestas, alertas a recepción, recordatorios y resumen diario). Todo se guarda en el registro central en Excel." onerror="document.getElementById('figura-diagrama').hidden = true;">
+        <figcaption>Diagrama del sistema. Las flechas de doble punta indican que el flujo lee y escribe en el registro central.</figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="t-docs" id="seccion-docs">
+      <h2 id="t-docs">Documentos y evidencias</h2>
+      <ul class="docs" id="lista-docs"></ul>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Proyecto «El Instituto que Nunca Duerme», Fundamentos de Ingeniería de Software, TecNM campus Matehuala.</p>
+    <p>Todos los nombres, correos, teléfonos y pagos son ficticios.</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN: aquí cambias los enlaces. No hace falta tocar
+   nada más del archivo.
+   ============================================================ */
+var CONFIG = {
+  // Enlace de tu bot de Telegram.
+  telegramUrl: "https://t.me/altiplano_kenia_bot",
+
+  // Enlace de OneDrive con permiso solo para ver. Si lo dejas vacío,
+  // el botón aparece desactivado.
+  excelUrl: "",
+
+  // Enlace del formulario de Microsoft Forms para constancias.
+  formsUrl: "",
+
+  // Retell: llave PÚBLICA (empieza con key_) e ID del agente de voz
+  // (empieza con agent_). Nunca pongas aquí la llave privada (API key).
+  // recaptchaKey es opcional (clave de sitio de reCAPTCHA v3).
+  retell: { publicKey: "", agentId: "", recaptchaKey: "" },
+
+  // Estado de cada canal: "activo", "solicitud" (se enciende al pedir la
+  // demostración) o "preparacion" (todavía no está construido).
+  estados: {
+    telegram: "solicitud",
+    voz: "solicitud",
+    constancias: "preparacion",
+    excel: "activo"
+  },
+
+  // Documentos que se muestran al final. Sube los archivos a la carpeta
+  // "docs" del repositorio y escribe aquí su nombre. Deja la lista vacía
+  // para ocultar la sección.
+  documentos: [
+    { titulo: "E1 · Investigación y diseño", descripcion: "Alternativas, qué automatizar y diagrama", url: "docs/E1.pdf" },
+    { titulo: "E2 · Registro central y correo", descripcion: "Power Automate y tabla Registro", url: "docs/E2.pdf" },
+    { titulo: "E3 · Mensajes", descripcion: "Bot de Telegram en n8n", url: "docs/E3.pdf" },
+    { titulo: "E4 · Teléfono y recordatorios de pago", descripcion: "Asistente de voz y aviso automático", url: "docs/E4.pdf" },
+    { titulo: "E5 · Documento final", descripcion: "Costos, pruebas, riesgos y manual", url: "docs/E5.pdf" }
+  ]
+};
+
+(function () {
+  var textoEstado = { activo: "Activo", solicitud: "Se activa al pedir la revisión", preparacion: "En preparación" };
+
+  function ponerEstado(id, valor) {
+    var el = document.getElementById("estado-" + id);
+    var v = textoEstado[valor] ? valor : "solicitud";
+    el.textContent = textoEstado[v];
+    el.className = "estado " + v;
+  }
+
+  function ponerEnlace(id, url, textoVacio) {
+    var a = document.getElementById("btn-" + id);
+    if (url) {
+      a.href = url;
+    } else {
+      a.removeAttribute("href");
+      a.setAttribute("aria-disabled", "true");
+      a.textContent = textoVacio;
+    }
+  }
+
+  ponerEnlace("telegram", CONFIG.telegramUrl, "Falta el enlace del bot");
+  ponerEnlace("constancias", CONFIG.formsUrl, "Formulario en preparación");
+  ponerEnlace("excel", CONFIG.excelUrl, "Falta el enlace del Excel");
+
+  ["telegram", "voz", "constancias", "excel"].forEach(function (k) {
+    ponerEstado(k, CONFIG.estados[k]);
+  });
+
+  var hayEnSolicitud = ["telegram", "voz", "constancias"].some(function (k) {
+    return CONFIG.estados[k] === "solicitud";
+  });
+  if (hayEnSolicitud) {
+    var aviso = document.getElementById("aviso");
+    aviso.textContent = "Los canales marcados como «Se activa al pedir la revisión» se encienden cuando se solicita la demostración. El Excel está disponible en todo momento.";
+    aviso.hidden = false;
+  }
+
+  /* Asistente de voz de Retell (widget incrustado) */
+  var btnVoz = document.getElementById("btn-voz");
+  var panelVoz = document.getElementById("panel-voz");
+  var zonaVoz = document.getElementById("voz-zona");
+  var vozCargada = false;
+
+  function cargarVoz() {
+    if (vozCargada) return;
+    vozCargada = true;
+    var r = CONFIG.retell;
+    if (!r.publicKey || !r.agentId) {
+      zonaVoz.innerHTML = '<p class="voz-error">El asistente de voz todavía no está configurado en esta página. Faltan la llave pública y el ID del agente de Retell.</p>';
+      return;
+    }
+    var cont = document.createElement("div");
+    cont.className = "voz-contenedor";
+    cont.setAttribute("data-retell-widget", "true");
+    cont.setAttribute("data-voice-public-key", r.publicKey);
+    cont.setAttribute("data-voice-agent-id", r.agentId);
+    cont.setAttribute("data-title", "Instituto Altiplano");
+    if (r.recaptchaKey) {
+      cont.setAttribute("data-recaptcha-key", r.recaptchaKey);
+      var rc = document.createElement("script");
+      rc.src = "https://www.google.com/recaptcha/api.js?render=" + encodeURIComponent(r.recaptchaKey);
+      document.head.appendChild(rc);
+    }
+    zonaVoz.appendChild(cont);
+    var s = document.createElement("script");
+    s.src = "https://dashboard.retellai.com/retell-widget-embed.js";
+    s.defer = true;
+    document.body.appendChild(s);
+  }
+
+  btnVoz.addEventListener("click", function () {
+    var abierto = !panelVoz.hidden;
+    panelVoz.hidden = abierto;
+    btnVoz.setAttribute("aria-expanded", String(!abierto));
+    btnVoz.textContent = abierto ? "Mostrar el asistente de voz" : "Ocultar el asistente de voz";
+    if (!abierto) cargarVoz();
+  });
+
+  /* Documentos */
+  var lista = document.getElementById("lista-docs");
+  if (!CONFIG.documentos || !CONFIG.documentos.length) {
+    document.getElementById("seccion-docs").hidden = true;
+  } else {
+    CONFIG.documentos.forEach(function (d) {
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = d.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      var n = document.createElement("span");
+      n.className = "doc-nombre";
+      n.textContent = d.titulo;
+      var s = document.createElement("span");
+      s.className = "doc-desc";
+      s.textContent = d.descripcion || "";
+      a.appendChild(n);
+      a.appendChild(s);
+      li.appendChild(a);
+      lista.appendChild(li);
+    });
+  }
+})();
+</script>
+</body>
+</html>
