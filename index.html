@@ -164,7 +164,7 @@
 <header>
   <div class="wrap">
     <h1>El Instituto que Nunca Duerme</h1>
-    <p class="lead">El Instituto Altiplano atiende a las familias por Telegram, por teléfono y con un formulario, y guarda cada contacto en un Excel en la nube.</p>
+    <p class="lead">El Instituto Altiplano atiende a las familias por Telegram, por teléfono y con un formulario, y guarda cada contacto en un  en la nube.</p>
     <p class="author">
       <span>Kenia Guadalupe Hernández Torres, número de control 24660123</span>
       <span>Fundamentos de Ingeniería de Software, TecNM campus Matehuala</span>
@@ -179,7 +179,7 @@
     <h2>Cómo comprobar que funciona</h2>
     <ol class="steps">
       <li><span class="n" aria-hidden="true">1</span><p>Escribe al bot de Telegram o habla con el asistente de voz.</p></li>
-      <li><span class="n" aria-hidden="true">2</span><p>Abre el Excel y entra a la pestaña <strong>Registro</strong>.</p></li>
+      <li><span class="n" aria-hidden="true">2</span><p>Abre el  y entra a la pestaña <strong>Registro</strong>.</p></li>
       <li><span class="n" aria-hidden="true">3</span><p>Recarga la hoja y busca la fila nueva, la última de la tabla.</p></li>
     </ol>
     <p class="nota">Cada fila guarda el canal (Mensaje, Teléfono o Correo), quién escribió, de qué trató y el estado. «Pendiente» significa que una persona debe atenderlo. Las llamadas aparecen unos 30 segundos después de colgar.</p>
@@ -230,7 +230,7 @@
         <li class="canal">
           <div class="canal-fila">
             <div>
-              <h3>Registro en Excel <span class="estado" id="estado-excel"></span></h3>
+              <h3>Registro en  <span class="estado" id="estado-"></span></h3>
               <p>Es el libro donde se guarda cada conversación, llamada y solicitud. Se abre en modo de solo lectura: puedes mirarlo sin modificar nada.</p>
             </div>
             <a class="boton" id="btn-excel" href="#" target="_blank" rel="noopener">Abrir el Excel</a>
@@ -275,7 +275,7 @@ var CONFIG = {
 
   // Enlace de OneDrive con permiso solo para ver. Si lo dejas vacío,
   // el botón aparece desactivado.
-  excelUrl: "",
+  excelUrl: "https://matehualatecnm-my.sharepoint.com/:x:/g/personal/l24660123_matehuala_tecnm_mx/IQDqgfqpU4C2SoLvpOq-lvMMAUJpAw7Sv-arU4ugESY3oCQ?e=3YoiBX",
 
   // Enlace del formulario de Microsoft Forms para constancias.
   formsUrl: "",
@@ -283,7 +283,7 @@ var CONFIG = {
   // Retell: llave PÚBLICA (empieza con key_) e ID del agente de voz
   // (empieza con agent_). Nunca pongas aquí la llave privada (API key).
   // recaptchaKey es opcional (clave de sitio de reCAPTCHA v3).
-  retell: { publicKey: "", agentId: "", recaptchaKey: "" },
+  retell: { publicKey: "public_key_157e61304dab678581c87", agentId: "agent_af6f218845875772b8a3b51e6c", recaptchaKey: "" },
 
   // Estado de cada canal: "activo", "solicitud" (se enciende al pedir la
   // demostración) o "preparacion" (todavía no está construido).
